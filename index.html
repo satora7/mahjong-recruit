@@ -207,7 +207,6 @@
           <option value="麻雀ウェルカム">
           <option value="GOLD7">
           <option value="リーチ麻雀じゃんじゃん">
-          <option value="いーじゃん">
           <option value="麻雀荘遊">
           <option value="マージャン倶楽部にしき">
           <option value="麻雀荘卓">
@@ -219,11 +218,21 @@
           <option value="麻雀倶楽部">
           <option value="愛染">
           <option value="たちばな">
+          <option value="いーじゃん">
         </datalist>
       </div>
       <div class="field">
-        <label>日時</label>
-        <input id="f-datetime" type="datetime-local" step="600">
+        <label>日付</label>
+        <input id="f-date" type="date" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:15px;font-family:'Noto Sans JP',sans-serif;outline:none;">
+      </div>
+      <div class="field">
+        <label>時刻</label>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select id="f-hour" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 10px;color:var(--text);font-size:15px;font-family:'Noto Sans JP',sans-serif;outline:none;"></select>
+          <span style="color:var(--muted);font-size:13px;white-space:nowrap;">時</span>
+          <select id="f-min" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 10px;color:var(--text);font-size:15px;font-family:'Noto Sans JP',sans-serif;outline:none;"></select>
+          <span style="color:var(--muted);font-size:13px;white-space:nowrap;">分</span>
+        </div>
       </div>
       <div class="field">
         <label>募集人数（自分を除く）</label>
@@ -269,7 +278,7 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  設定：GASのウェブアプリURLをここに入れる
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzMlhvMdgP5cLFF6zXzOwbv3CA_4Xm49N2sr-ywJ8CR7IDy6RX6D5_nuwKcvCOp50vKzQ/exec'; // ← デプロイ後に書き換える
+const GAS_URL = 'YOUR_GAS_WEB_APP_URL'; // ← デプロイ後に書き換える
 
 // ━━━ State ━━━
 let selectedSeats = 3;
@@ -290,18 +299,33 @@ function selectSeats(btn) {
   selectedSeats = parseInt(btn.dataset.n);
 }
 
-// ━━━ Datetime default ━━━
+// ━━━ Datetime selects init ━━━
 (function() {
   const now = new Date();
-  now.setMinutes(Math.ceil(now.getMinutes() / 10) * 10, 0, 0);
-  if (now.getMinutes() === 60) { now.setHours(now.getHours() + 1, 0, 0, 0); }
-  document.getElementById('f-datetime').value = now.toISOString().slice(0,16);
+  // 日付：カレンダーinputのデフォルトを今日に
+  const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0'), d = String(now.getDate()).padStart(2,'0');
+  document.getElementById('f-date').value = `${y}-${m}-${d}`;
+  // 時間セレクト：0〜23時（「時」は外に表示）
+  const hourEl = document.getElementById('f-hour');
+  for (let h = 0; h < 24; h++) {
+    hourEl.appendChild(new Option(String(h).padStart(2,'0'), h));
+  }
+  hourEl.value = now.getHours();
+  // 分セレクト：10分刻み（「分」は外に表示）
+  const minEl = document.getElementById('f-min');
+  for (let m = 0; m < 60; m += 10) {
+    minEl.appendChild(new Option(String(m).padStart(2,'0'), m));
+  }
+  minEl.value = Math.ceil(now.getMinutes() / 10) * 10 % 60;
 })();
 
 // ━━━ CREATE ━━━
 async function createRecruit() {
   const place = document.getElementById('f-place').value.trim();
-  const dt    = document.getElementById('f-datetime').value;
+  const dateVal = document.getElementById('f-date').value;
+  const hour    = String(document.getElementById('f-hour').value).padStart(2,'0');
+  const min     = String(document.getElementById('f-min').value).padStart(2,'0');
+  const dt      = dateVal ? `${dateVal}T${hour}:${min}` : '';
   const name  = document.getElementById('f-name').value.trim();
   const err   = document.getElementById('create-error');
   err.className = 'error-box';
