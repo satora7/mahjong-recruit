@@ -202,11 +202,28 @@
     <div class="form-card">
       <div class="field">
         <label>場所・内容</label>
-        <input id="f-place" type="text" placeholder="例：いつもの雀荘、自宅など" maxlength="40">
+        <input id="f-place" type="text" placeholder="店名を選ぶか直接入力..." maxlength="40" list="shop-list" autocomplete="off">
+        <datalist id="shop-list">
+          <option value="麻雀ウェルカム">
+          <option value="GOLD7">
+          <option value="リーチ麻雀じゃんじゃん">
+          <option value="いーじゃん">
+          <option value="麻雀荘遊">
+          <option value="マージャン倶楽部にしき">
+          <option value="麻雀荘卓">
+          <option value="麻貴">
+          <option value="フリー雀荘フリテンくん甲府店">
+          <option value="麻雀倶楽部雀港">
+          <option value="マージャンクラブ中">
+          <option value="3人麻雀なきむしいちご">
+          <option value="麻雀倶楽部">
+          <option value="愛染">
+          <option value="たちばな">
+        </datalist>
       </div>
       <div class="field">
         <label>日時</label>
-        <input id="f-datetime" type="datetime-local">
+        <input id="f-datetime" type="datetime-local" step="600">
       </div>
       <div class="field">
         <label>募集人数（自分を除く）</label>
@@ -252,7 +269,7 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  設定：GASのウェブアプリURLをここに入れる
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzMlhvMdgP5cLFF6zXzOwbv3CA_4Xm49N2sr-ywJ8CR7IDy6RX6D5_nuwKcvCOp50vKzQ/exec'; 
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzMlhvMdgP5cLFF6zXzOwbv3CA_4Xm49N2sr-ywJ8CR7IDy6RX6D5_nuwKcvCOp50vKzQ/exec'; // ← デプロイ後に書き換える
 
 // ━━━ State ━━━
 let selectedSeats = 3;
@@ -276,7 +293,8 @@ function selectSeats(btn) {
 // ━━━ Datetime default ━━━
 (function() {
   const now = new Date();
-  now.setHours(now.getHours() + 1, 0, 0, 0);
+  now.setMinutes(Math.ceil(now.getMinutes() / 10) * 10, 0, 0);
+  if (now.getMinutes() === 60) { now.setHours(now.getHours() + 1, 0, 0, 0); }
   document.getElementById('f-datetime').value = now.toISOString().slice(0,16);
 })();
 
