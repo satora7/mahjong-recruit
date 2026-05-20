@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一撃ツモツモ団 — メンツ募集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #06C755;
+    --green-dark: #04a044;
+    --green-dim: rgba(6,199,85,0.12);
+    --red: #e74c3c;
+    --red-dim: rgba(231,76,60,0.1);
+    --bg: #0f0f13;
+    --surface: #1a1a22;
+    --surface2: #22222e;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0f0f0;
+    --muted: rgba(240,240,240,0.45);
+    --tile: #2a2a38;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 20px 16px;
+    text-align: center;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .header-title {
+    font-size: 13px; letter-spacing: 0.15em; color: var(--green);
+    font-family: 'DM Mono', monospace; text-transform: uppercase; margin-bottom: 2px;
+  }
+  .header-sub { font-size: 11px; color: var(--muted); }
+
+  /* ── Sections ── */
+  .section { padding: 24px 16px 0; max-width: 480px; margin: 0 auto; }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .tab {
+    flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-size: 13px; font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .tab.active { background: var(--green-dim); border-color: var(--green); color: var(--green); font-weight: 500; }
+
+  /* ── Create Form ── */
+  .form-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px;
+  }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 6px; text-transform: uppercase; font-family: 'DM Mono', monospace; }
+  .field input, .field select {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px; color: var(--text);
+    font-size: 15px; font-family: 'Noto Sans JP', sans-serif; outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus { border-color: var(--green); }
+  .field input::placeholder { color: var(--muted); }
+
+  .seats-row { display: flex; gap: 8px; }
+  .seat-btn {
+    flex: 1; padding: 10px 0; border-radius: 10px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-size: 14px; cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s;
+  }
+  .seat-btn.active { background: var(--green-dim); border-color: var(--green); color: var(--green); font-weight: 500; }
+
+  .btn-primary {
+    width: 100%; padding: 15px; border-radius: 12px; border: none;
+    background: var(--green); color: #fff; font-size: 15px; font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    margin-top: 8px; letter-spacing: 0.03em;
+  }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; transform: none; }
+
+  /* ── Share box ── */
+  .share-box {
+    background: var(--green-dim); border: 1px solid var(--green);
+    border-radius: 14px; padding: 18px; margin-top: 16px; display: none;
+  }
+  .share-box.visible { display: block; }
+  .share-label { font-size: 11px; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+  .share-url {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px; font-size: 12px; font-family: 'DM Mono', monospace;
+    color: var(--text); word-break: break-all; margin-bottom: 10px; cursor: pointer;
+  }
+  .share-url:hover { border-color: var(--green); }
+  .btn-copy {
+    width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--green);
+    background: transparent; color: var(--green); font-size: 13px; font-weight: 500;
+    font-family: 'Noto Sans JP', sans-serif; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-copy:hover { background: var(--green-dim); }
+  .btn-copy.copied { background: var(--green); color: #fff; }
+
+  /* ── Recruit Card (join view) ── */
+  .recruit-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+    overflow: hidden;
+  }
+  .rc-header { background: var(--surface2); padding: 18px 20px; border-bottom: 1px solid var(--border); }
+  .rc-game { font-size: 11px; color: var(--green); letter-spacing: 0.12em; text-transform: uppercase; font-family: 'DM Mono', monospace; margin-bottom: 4px; }
+  .rc-title { font-size: 18px; font-weight: 700; }
+  .rc-body { padding: 18px 20px; }
+  .rc-meta { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .rc-meta-row { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .rc-meta-icon { font-size: 16px; width: 20px; text-align: center; opacity: 0.6; }
+  .rc-meta-val { color: var(--text); }
+
+  /* progress */
+  .progress-section { margin-bottom: 18px; }
+  .progress-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .progress-count { font-size: 28px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--green); }
+  .progress-need { font-size: 13px; color: var(--muted); }
+  .progress-bar-bg { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.5s ease; }
+
+  /* members */
+  .members-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; min-height: 30px; }
+  .member-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--tile); border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 10px; font-size: 12px;
+    animation: chipIn 0.25s ease;
+  }
+  .member-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  @keyframes chipIn { from { opacity:0; transform:scale(0.85); } to { opacity:1; transform:scale(1); } }
+
+  .btn-join {
+    width: 100%; padding: 16px; border-radius: 14px; border: none;
+    background: var(--green); color: #fff; font-size: 16px; font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif; cursor: pointer; transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .btn-join:hover { background: var(--green-dark); transform: translateY(-1px); }
+  .btn-join:active { transform: scale(0.98) translateY(0); }
+  .btn-join.full { background: var(--surface2); color: var(--muted); cursor: not-allowed; transform: none; }
+  .btn-join.joined { background: var(--surface2); color: var(--green); border: 1px solid var(--green); cursor: not-allowed; transform: none; }
+
+  .full-banner {
+    background: var(--green-dim); border: 1px solid var(--green);
+    border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 14px; display: none;
+  }
+  .full-banner.visible { display: block; }
+  .full-banner-title { font-size: 15px; font-weight: 700; color: var(--green); margin-bottom: 2px; }
+  .full-banner-sub { font-size: 12px; color: var(--muted); }
+
+  /* ── Empty / Loading ── */
+  .state-msg { text-align: center; padding: 48px 20px; color: var(--muted); font-size: 14px; line-height: 1.8; }
+  .state-msg .big { font-size: 36px; margin-bottom: 12px; }
+
+  /* ── Error ── */
+  .error-box {
+    background: var(--red-dim); border: 1px solid var(--red);
+    border-radius: 12px; padding: 14px 16px; font-size: 13px; color: var(--red);
+    margin-top: 12px; display: none;
+  }
+  .error-box.visible { display: block; }
+
+  /* ── Spinner ── */
+  .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* tiles deco */
+  .tiles-deco { display: flex; gap: 6px; justify-content: center; padding: 16px 0 0; opacity: 0.15; font-size: 22px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">一撃ツモツモ団</div>
+  <div class="header-sub">メンツ募集システム</div>
+</div>
+
+<div class="section" id="app">
+  <!-- tabs: shown only when NOT in join mode -->
+  <div class="tabs" id="tabs">
+    <button class="tab active" onclick="showTab('create')">募集を立てる</button>
+    <button class="tab" onclick="showTab('list')">募集一覧</button>
+  </div>
+
+  <!-- CREATE TAB -->
+  <div id="pane-create">
+    <div class="form-card">
+      <div class="field">
+        <label>場所・内容</label>
+        <input id="f-place" type="text" placeholder="例：いつもの雀荘、自宅など" maxlength="40">
+      </div>
+      <div class="field">
+        <label>日時</label>
+        <input id="f-datetime" type="datetime-local">
+      </div>
+      <div class="field">
+        <label>募集人数（自分を除く）</label>
+        <div class="seats-row">
+          <button class="seat-btn active" data-n="3" onclick="selectSeats(this)">あと3人</button>
+          <button class="seat-btn" data-n="2" onclick="selectSeats(this)">あと2人</button>
+          <button class="seat-btn" data-n="1" onclick="selectSeats(this)">あと1人</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>あなたの名前</label>
+        <input id="f-name" type="text" placeholder="例：Shu" maxlength="12">
+      </div>
+      <div class="error-box" id="create-error"></div>
+      <button class="btn-primary" id="btn-create" onclick="createRecruit()">募集を作成してURLを生成</button>
+    </div>
+
+    <div class="share-box" id="share-box">
+      <div class="share-label">LINEに貼るURL</div>
+      <div class="share-url" id="share-url-text" onclick="copyUrl()"></div>
+      <button class="btn-copy" id="btn-copy" onclick="copyUrl()">URLをコピー</button>
+    </div>
+
+    <div class="tiles-deco">🀇🀙🀄🀅🀆</div>
+  </div>
+
+  <!-- LIST TAB -->
+  <div id="pane-list" style="display:none">
+    <div id="list-content">
+      <div class="state-msg"><div class="big">🀄</div>読み込み中...</div>
+    </div>
+  </div>
+
+  <!-- JOIN VIEW (URL param ?id=xxx) -->
+  <div id="pane-join" style="display:none">
+    <div id="join-content">
+      <div class="state-msg"><div class="big">🀄</div>読み込み中...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  設定：GASのウェブアプリURLをここに入れる
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzMlhvMdgP5cLFF6zXzOwbv3CA_4Xm49N2sr-ywJ8CR7IDy6RX6D5_nuwKcvCOp50vKzQ/exec'; 
+
+// ━━━ State ━━━
+let selectedSeats = 3;
+let joinedId = null; // localStorage key for this recruit
+
+// ━━━ Tab control ━━━
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('pane-create').style.display = tab === 'create' ? '' : 'none';
+  document.getElementById('pane-list').style.display = tab === 'list' ? '' : 'none';
+  event.currentTarget.classList.add('active');
+  if (tab === 'list') loadList();
+}
+
+function selectSeats(btn) {
+  document.querySelectorAll('.seat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedSeats = parseInt(btn.dataset.n);
+}
+
+// ━━━ Datetime default ━━━
+(function() {
+  const now = new Date();
+  now.setHours(now.getHours() + 1, 0, 0, 0);
+  document.getElementById('f-datetime').value = now.toISOString().slice(0,16);
+})();
+
+// ━━━ CREATE ━━━
+async function createRecruit() {
+  const place = document.getElementById('f-place').value.trim();
+  const dt    = document.getElementById('f-datetime').value;
+  const name  = document.getElementById('f-name').value.trim();
+  const err   = document.getElementById('create-error');
+  err.className = 'error-box';
+
+  if (!place || !dt || !name) {
+    err.textContent = '全ての項目を入力してください。';
+    err.className = 'error-box visible'; return;
+  }
+
+  const btn = document.getElementById('btn-create');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>作成中...';
+
+  try {
+    const res = await gas('create', { place, datetime: dt, seats: selectedSeats, owner: name });
+    if (res.ok) {
+      const url = `${location.origin}${location.pathname}?id=${res.id}`;
+      const box = document.getElementById('share-box');
+      document.getElementById('share-url-text').textContent = url;
+      box.className = 'share-box visible';
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      throw new Error(res.error || '作成に失敗しました');
+    }
+  } catch(e) {
+    err.textContent = e.message;
+    err.className = 'error-box visible';
+  }
+  btn.disabled = false;
+  btn.textContent = '募集を作成してURLを生成';
+}
+
+function copyUrl() {
+  const url = document.getElementById('share-url-text').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('btn-copy');
+    btn.textContent = 'コピーしました！';
+    btn.className = 'btn-copy copied';
+    setTimeout(() => { btn.textContent = 'URLをコピー'; btn.className = 'btn-copy'; }, 2000);
+  });
+}
+
+// ━━━ LIST ━━━
+async function loadList() {
+  const c = document.getElementById('list-content');
+  c.innerHTML = '<div class="state-msg"><div class="big">🀄</div>読み込み中...</div>';
+  try {
+    const res = await gas('list');
+    if (!res.items || res.items.length === 0) {
+      c.innerHTML = '<div class="state-msg"><div class="big">🀄</div>現在募集中の対局はありません。</div>'; return;
+    }
+    c.innerHTML = res.items.map(r => recruitCardHtml(r, false)).join('');
+  } catch(e) {
+    c.innerHTML = `<div class="state-msg">読み込みに失敗しました。<br>GAS URLを確認してください。</div>`;
+  }
+}
+
+// ━━━ JOIN VIEW ━━━
+async function loadJoin(id) {
+  document.getElementById('tabs').style.display = 'none';
+  document.getElementById('pane-create').style.display = 'none';
+  document.getElementById('pane-join').style.display = '';
+  const c = document.getElementById('join-content');
+
+  try {
+    const res = await gas('get', { id });
+    if (!res.ok) throw new Error(res.error);
+    renderJoin(res.recruit);
+    // poll every 5s
+    setInterval(async () => {
+      const r2 = await gas('get', { id });
+      if (r2.ok) renderJoin(r2.recruit);
+    }, 5000);
+  } catch(e) {
+    c.innerHTML = `<div class="state-msg">募集が見つかりません。<br>URLを確認してください。</div>`;
+  }
+}
+
+function renderJoin(r) {
+  const myKey = 'joined_' + r.id;
+  const alreadyJoined = localStorage.getItem(myKey) === '1';
+  const isFull = r.count >= r.total;
+  const pct = Math.round((r.count / r.total) * 100);
+  const dtStr = formatDt(r.datetime);
+
+  const memberChips = r.members.map(m =>
+    `<span class="member-chip"><span class="member-dot"></span>${m}</span>`
+  ).join('');
+
+  const emptySlots = r.total - r.count;
+  const emptyChips = Array(emptySlots).fill(0).map(() =>
+    `<span class="member-chip" style="opacity:0.3;border-style:dashed"><span class="member-dot" style="background:var(--muted)"></span>空き</span>`
+  ).join('');
+
+  let joinBtn = '';
+  if (isFull) {
+    joinBtn = `<button class="btn-join full" disabled>満員御礼 — 募集終了</button>`;
+  } else if (alreadyJoined) {
+    joinBtn = `<button class="btn-join joined" disabled>参加済み</button>`;
+  } else {
+    joinBtn = `<button class="btn-join" onclick="doJoin('${r.id}')">参加する</button>`;
+  }
+
+  document.getElementById('join-content').innerHTML = `
+    <div class="full-banner ${isFull ? 'visible' : ''}">
+      <div class="full-banner-title">メンツ確定！</div>
+      <div class="full-banner-sub">4名揃いました。対局開始！</div>
+    </div>
+    <div class="recruit-card">
+      <div class="rc-header">
+        <div class="rc-game">麻雀 / メンツ募集</div>
+        <div class="rc-title">${esc(r.place)}</div>
+      </div>
+      <div class="rc-body">
+        <div class="rc-meta">
+          <div class="rc-meta-row"><span class="rc-meta-icon">📅</span><span class="rc-meta-val">${dtStr}</span></div>
+          <div class="rc-meta-row"><span class="rc-meta-icon">👑</span><span class="rc-meta-val">募集主：${esc(r.owner)}</span></div>
+        </div>
+        <div class="progress-section">
+          <div class="progress-top">
+            <span class="progress-count">${r.count}<span style="font-size:14px;color:var(--muted)"> / ${r.total}人</span></span>
+            <span class="progress-need">${isFull ? '満員' : `あと${r.total - r.count}人`}</span>
+          </div>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+        </div>
+        <div class="members-list">${memberChips}${emptyChips}</div>
+        ${joinBtn}
+      </div>
+    </div>
+    <div class="tiles-deco">🀇🀙🀄🀅🀆</div>
+  `;
+}
+
+async function doJoin(id) {
+  const name = prompt('あなたの名前を入力してください：');
+  if (!name || !name.trim()) return;
+  const btn = document.querySelector('.btn-join');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; }
+  try {
+    const res = await gas('join', { id, name: name.trim() });
+    if (res.ok) {
+      localStorage.setItem('joined_' + id, '1');
+      const r2 = await gas('get', { id });
+      if (r2.ok) renderJoin(r2.recruit);
+    } else {
+      alert(res.error || '参加に失敗しました');
+      if (btn) { btn.disabled = false; btn.textContent = '参加する'; }
+    }
+  } catch(e) {
+    alert('通信エラーが発生しました');
+    if (btn) { btn.disabled = false; btn.textContent = '参加する'; }
+  }
+}
+
+// ━━━ List card HTML ━━━
+function recruitCardHtml(r, isJoin) {
+  const isFull = r.count >= r.total;
+  const dtStr = formatDt(r.datetime);
+  return `
+    <div class="recruit-card" style="margin-bottom:12px">
+      <div class="rc-header">
+        <div class="rc-game">麻雀 / メンツ募集</div>
+        <div class="rc-title">${esc(r.place)}</div>
+      </div>
+      <div class="rc-body">
+        <div class="rc-meta" style="margin-bottom:12px">
+          <div class="rc-meta-row"><span class="rc-meta-icon">📅</span><span class="rc-meta-val">${dtStr}</span></div>
+          <div class="rc-meta-row"><span class="rc-meta-icon">👑</span><span class="rc-meta-val">募集主：${esc(r.owner)}</span></div>
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px">
+          ${isFull ? '<span style="color:var(--green)">満員 ✓</span>' : `あと${r.total - r.count}人`} — ${r.members.join('、')}
+        </div>
+        <a href="?id=${r.id}" style="display:block;padding:11px;border-radius:10px;border:1px solid var(--green);color:var(--green);text-align:center;font-size:13px;font-weight:500;text-decoration:none">
+          ${isFull ? '詳細を見る' : '詳細・参加する'}
+        </a>
+      </div>
+    </div>`;
+}
+
+// ━━━ GAS API call ━━━
+function gas(action, params = {}) {
+  const url = GAS_URL + '?action=' + action + '&' + new URLSearchParams(params);
+  return fetch(url).then(r => r.json());
+}
+
+// ━━━ Utils ━━━
+function formatDt(s) {
+  if (!s) return '日時未定';
+  const d = new Date(s);
+  return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}〜`;
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ━━━ Router ━━━
+const urlParams = new URLSearchParams(location.search);
+const joinId = urlParams.get('id');
+if (joinId) {
+  loadJoin(joinId);
+}
+</script>
+</body>
+</html>
